@@ -358,7 +358,7 @@ public class ShopManager {
 			p.sendMessage(MsgUtil.getMessage("shop-has-changed"));
 			return;
 		}
-		if (shop.isSelling()) {
+		if (shop.isSelling()) { //Selling
 			int stock = shop.getRemainingStock();
 			if(stock==-1)
 				stock=10000;
@@ -367,15 +367,18 @@ public class ShopManager {
 						MsgUtil.getDisplayName(shop.getItem())));
 				return;
 			}
+			// Buy 0
 			if (amount == 0) {
 				// Dumb.
 				MsgUtil.sendPurchaseSuccess(p, shop, amount);
 				return;
+				// Buy <0
 			} else if (amount < 0) {
 				// & Dumber
 				p.sendMessage(MsgUtil.getMessage("negative-amount"));
 				return;
 			}
+			//Calc spave
 			int pSpace = Util.countSpace(p.getInventory(), shop.getItem());
 			if (amount > pSpace) {
 				p.sendMessage(MsgUtil.getMessage("not-enough-space", "" + pSpace));
@@ -409,6 +412,8 @@ public class ShopManager {
 							format(plugin.getEcon().getBalance(p.getUniqueId()))));
 					return;
 				}
+				
+				
 				if (shop.isUnlimited() || plugin.getConfig().getBoolean("shop.pay-unlimited-shop-owners")) {
 					boolean depositresult = plugin.getEcon().deposit(shop.getOwner(), total * (1 - tax));
 					if (!depositresult) {
@@ -481,8 +486,6 @@ public class ShopManager {
 			Bukkit.getPluginManager().callEvent(e);
 			if (e.isCancelled())
 				return; // Cancelled
-			// Money handlingpay-unlimited-shop-owners
-			if (!p.getUniqueId().equals(shop.getOwner()) || plugin.getConfig().getBoolean("shop.bypass-owner-check")) {
 				// Don't tax them if they're purchasing from
 				// themselves.
 				// Do charge an amount of tax though.
@@ -544,7 +547,6 @@ public class ShopManager {
 			MsgUtil.sendSellSuccess(p, shop, amount);
 			plugin.log(
 					p.getName() + " sold " + amount + " for " + (shop.getPrice() * amount) + " to " + shop.toString());
-		}
 		shop.setSignText(); // Update the signs count
 	}
 
